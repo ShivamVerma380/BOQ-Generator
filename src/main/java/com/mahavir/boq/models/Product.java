@@ -3,8 +3,10 @@ package com.mahavir.boq.models;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Scope;
 
 @Component
+@Scope(value = "prototype")
 @Document(collection = "products")
 public class Product {
     
@@ -13,7 +15,7 @@ public class Product {
 
     private String itemName;
 
-    private String description;
+    private String description[];
 
     private String unitRate;
 
@@ -24,7 +26,7 @@ public class Product {
     public Product() {
     }
 
-    public Product(String modelName, String itemName, String description, String unitRate, String hsnCode, String gstRate) {
+    public Product(String modelName, String itemName, String[] description, String unitRate, String hsnCode, String gstRate) {
         this.modelName = modelName;
         this.itemName = itemName;
         this.description = description;
@@ -49,11 +51,11 @@ public class Product {
         this.itemName = itemName;
     }
 
-    public String getDescription() {
+    public String[] getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(String[] description) {
         this.description = description;
     }
 
