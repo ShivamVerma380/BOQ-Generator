@@ -1,11 +1,13 @@
 package com.mahavir.boq.models;
 
+import org.springframework.context.annotation.Scope;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.stereotype.Component;
 
 @Component
 @Document(collection = "admin")
+@Scope(value = "prototype")
 public class Admin {
     
     @Id
