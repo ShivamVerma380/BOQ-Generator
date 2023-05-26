@@ -43,6 +43,9 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter{
                 .authorizeRequests()
                 .antMatchers("/register",
                 "/login",
+                "/verify-email/{email}",
+                "/resend-otp/{email}",
+                "/forgotPassword/{email}",
                 "/v3/api-docs",
                 "/v2/api-docs",
                 "/swagger-resources/**",
