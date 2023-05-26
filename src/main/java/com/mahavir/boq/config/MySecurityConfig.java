@@ -42,6 +42,7 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter{
                 .disable()
                 .authorizeRequests()
                 .antMatchers("/register",
+                "/login",
                 "/v3/api-docs",
                 "/v2/api-docs",
                 "/swagger-resources/**",

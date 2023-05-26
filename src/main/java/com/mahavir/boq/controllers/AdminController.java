@@ -32,4 +32,16 @@ public class AdminController {
         }
     }
 
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestParam("email") String email,@RequestParam("password") String password){
+        try {
+            return adminService.login(email, password);
+        } catch (Exception e) {
+            e.printStackTrace();
+            responseMessage.setMessage(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseMessage);
+        }
+    }
+
 }
