@@ -1,8 +1,10 @@
 package com.mahavir.boq.services;
 
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import com.mahavir.boq.daos.CategoryDao;
 import com.mahavir.boq.helper.ResponseMessage;
+import com.mahavir.boq.models.Brand;
 import com.mahavir.boq.models.Category;
 import com.mahavir.boq.models.Type;
 
@@ -43,6 +46,8 @@ public class CategoryService {
             
 
             Category category = null;
+
+            ArrayList<Type> types = null;
             
             while(rowIterator.hasNext()){
                 Row row = rowIterator.next();
@@ -55,26 +60,28 @@ public class CategoryService {
                 Iterator<Cell> cellIterator = row.cellIterator();
 
                 int cId = 0;
-                
 
+                String typeName = null, categoryName = null;
+                
                 while(cellIterator.hasNext()){
                     Cell cell = cellIterator.next();
                     boolean flag = false;
                     switch(cId){
                         case 0:
-                            String categoryName = formatter.formatCellValue(cell);
+                            categoryName = formatter.formatCellValue(cell);
                             category = categoryDao.findByCategoryname(categoryName);
                             if(category == null){
                                 category = new Category();
                                 category.setCategoryname(categoryName);
                             }
+                            categoryDao.save(category);
                         break;
                         case 1:
-                            ArrayList<Type> types = category.getTypes();
+                            types = category.getTypes();
                             if(types == null){
                                 types = new ArrayList<Type>();
                             }
-                            String typeName = formatter.formatCellValue(cell);
+                            typeName = formatter.formatCellValue(cell);
                             for(int i=0;i<types.size();i++){
                                 if(types.get(i).getTypename().equals(typeName)){
                                     flag = true;
@@ -82,12 +89,34 @@ public class CategoryService {
                                 }
                             }
 
+
                             if(!flag){
                                 Type type = new Type();
                                 type.setTypename(typeName);
                                 types.add(type);
                                 category.setTypes(types);
+                                categoryDao.save(category);
                             }
+
+                        break;
+                        case 2:
+                            String brandName = formatter.formatCellValue(cell);
+                            
+                            category = categoryDao.findByCategoryname(categoryName);
+
+                            types = category.getTypes();
+
+                            for(int i=0;i<types.size();i++){
+                                if(types.get(i).getTypename().equals(typeName)){
+                                    
+                                    types.get(i).getBrands().add(new Brand(brandName, null));
+                                    category.setTypes(types);
+                                    categoryDao.save(category);
+                                    break;
+                                }
+                            }
+                            
+                            
                         break;
                         default:
                         break;
@@ -96,8 +125,6 @@ public class CategoryService {
                     cId++;
 
                 }
-
-                categoryDao.save(category);
             }
             return ResponseEntity.status(HttpStatus.OK).build();
         } catch (Exception e) {
