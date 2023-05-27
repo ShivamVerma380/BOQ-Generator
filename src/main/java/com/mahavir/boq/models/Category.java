@@ -17,6 +17,7 @@ public class Category {
     private ArrayList<Type> types;
 
     public Category() {
+        this.types = new ArrayList<Type>();
     }
 
     public Category(String categoryname, ArrayList<Type> types) {

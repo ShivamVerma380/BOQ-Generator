@@ -12,6 +12,7 @@ public class Type {
     private ArrayList<Brand> brands;
 
     public Type() {
+        this.brands = new ArrayList<Brand>();
     }
 
     public Type(String typename, ArrayList<Brand> brands) {

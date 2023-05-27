@@ -1,6 +1,7 @@
 package com.mahavir.boq.models;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.stereotype.Component;
@@ -15,6 +16,7 @@ public class Brand {
     
 
     public Brand() {
+        this.models = new HashMap<>();
     }
 
     public Brand(String brandName, Map<String, ArrayList<String>> models) {
