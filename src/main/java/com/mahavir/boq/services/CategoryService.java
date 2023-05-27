@@ -3,6 +3,8 @@ package com.mahavir.boq.services;
 import java.io.InputStream;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -61,7 +63,7 @@ public class CategoryService {
 
                 int cId = 0;
 
-                String typeName = null, categoryName = null;
+                String typeName = null, categoryName = null, brandName = null;
                 
                 while(cellIterator.hasNext()){
                     Cell cell = cellIterator.next();
@@ -100,7 +102,7 @@ public class CategoryService {
 
                         break;
                         case 2:
-                            String brandName = formatter.formatCellValue(cell);
+                            brandName = formatter.formatCellValue(cell);
                             
                             category = categoryDao.findByCategoryname(categoryName);
 
@@ -108,8 +110,20 @@ public class CategoryService {
 
                             for(int i=0;i<types.size();i++){
                                 if(types.get(i).getTypename().equals(typeName)){
-                                    
-                                    types.get(i).getBrands().add(new Brand(brandName, null));
+                                    ArrayList<Brand> brands = types.get(i).getBrands();
+                                    boolean isBrandPresent = false;
+                                    for(int j=0;j<brands.size();j++){
+                                        if(brands.get(j).getBrandName().equals(brandName)){
+                                            isBrandPresent = true;
+                                            break;
+                                        }
+                                    }
+
+                                    if(!isBrandPresent){
+                                        types.get(i).getBrands().add(new Brand(brandName, null));
+                                    }
+                                
+                                   
                                     category.setTypes(types);
                                     categoryDao.save(category);
                                     break;
@@ -118,6 +132,41 @@ public class CategoryService {
                             
                             
                         break;
+                        case 3:
+                            String value = formatter.formatCellValue(cell);
+
+                            category = categoryDao.findByCategoryname(categoryName);
+
+                            types = category.getTypes();
+
+                            String arr[] = value.split("#");
+
+                            Map<String, ArrayList<String>> map = new HashMap<>();
+                            
+                            for(int i=0;i<arr.length;i++){
+                                String pair[] = arr[i].split("=");
+                                map.put(pair[0],new ArrayList<>(Arrays.asList(pair[1].split(","))));
+                            }
+
+                            for(int i=0;i<types.size();i++){
+                                if(types.get(i).getTypename().equals(typeName)){
+                                    
+                                    ArrayList<Brand> brands = types.get(i).getBrands();
+                                    for(int j=0;j<brands.size();j++){
+                                        if(brands.get(j).getBrandName().equals(brandName)){
+                                            brands.get(j).setModels(map);
+                                            types.get(i).setBrands(brands);
+                                            category.setTypes(types);
+                                            categoryDao.save(category);
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+
+
+                        break;
+
                         default:
                         break;
                     }
@@ -135,4 +184,14 @@ public class CategoryService {
         }
     }
 
+
+    public ResponseEntity<?> getCategories(){
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(categoryDao.findAll());
+        } catch (Exception e) {
+            e.printStackTrace();
+            responseMessage.setMessage(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseMessage);
+        }
+    }
 }
